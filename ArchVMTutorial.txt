@@ -1,0 +1,116 @@
+~ # passwd
+~ # loadkeys br-abnt2
+        ### ls /usr/share/kbd/keymaps/**/*.map.gz may be used for checking available layouts
+~ # ping 8.8.8.8
+~ # timedatectl set-ntp true
+
+MAKE PARTITIONS
+~ # lsblk
+~ # cfdisk
+        Select GPT > NEW > SET 512MB > SET EFI SYSTEM type
+        Select Free Space > NEW > Set a swap as being the RAM x2 (if you got 2GB ram set it to 4GB) > SET LINUX SWAP type
+        Select Free Space > NEW > Set remaining space as LINUX FILESYSTEM
+        Select WRITE > Yes > Quit
+
+~ # lsblk (check if there are 3 partitions being sda1 to sda3)
+~ # mkfs.fat -F32 /dev/sda1
+~ # mkswap /dev/sda2
+~ # swapon /dev/sda2
+~ # mkfs.ext4 /dev/sda3
+
+~ # mount /dev/sda3 /mnt
+~ # mkdir /mnt/boot
+~ # mount /dev/sda1 /mnt/boot
+
+~ # lsblk (to check if everything is done)
+
+INSTALL PACKAGES
+~ # pacstrap /mnt base base-devel linux linux-firmware
+        ### may take a while
+
+INSTALL NANO
+~ # pacman -Sy nano
+
+CONFIGURING THE SYSTEM
+~ # genfstab -U /mnt >> /etc/fstab
+~ # arch-chroot /mnt
+~ # ln -sf /usr/share/zoneinfo/America/Sao_Paulo etc/localtime
+        ### timedatectl list-timezones (for listing available ones)
+~ # hwclock --systohc
+~ # nano /etc/locale.gen
+        ### uncomment the desired locale
+CTRL + O > ENTER > CTRL + X
+
+~ # locale-gen
+~ # nano /etc/locale.conf
+        ### LANG=en_UTF-8 for English or type desired locale
+~ # nano /etc/vconsole.conf
+        ### KEYMAP=br-abnt2 or desired keyboard layout
+CTRL + O > ENTER > CTRL + X
+~ # nano /etc/hostname
+        ### arch or desired hostname
+~ # nano /etc/hosts
+TYPE:
+        127.0.0.1   localhost
+        ::1         localhost
+        127.0.0.1   arch.localdomain    arch
+CTRL + O > ENTER > CTRL + X
+
+INSTALL NETWORK MANAGER
+~ # pacman -S networkmanager
+~ # systemctl enable NetworkManager
+
+CHANGE PASSWORD FOR ROOT
+~ # passwd
+
+INSTALL BOOT
+~ # pacman -S grub efibootmgr
+~ # grub-install --target=x86_64-efi --efi-directory=/boot
+~ # grub-mkconfig -o /boot/grub/grub.cfg
+
+SYSTEM IS INSTALLED
+~ # exit
+~ # umount -a
+        ### if they are busy, don't worry
+~ # reboot
+
+LOGIN AS ROOT
+login: root
+password: **** 
+~ # pacman -Sy openssh
+~ # systemctl start sshd
+~ # systemctl status sshd
+
+ADD USER
+~ # useradd -m -G wheel koliak
+~ # passwd koliak
+~ # exit
+login as koliak
+
+ADD USER AS SUDO
+~ # su
+        ### Type root password
+~ # EDITOR=nano visudo
+        ### scroll until you find wheel group
+        ### uncomment %wheel ALL=(ALL)ALL
+CTRL + O > ENTER > CTRL + X
+~ # exit
+login as koliak
+
+~ # sudo pacman -Syu
+        ### for testing su permissions
+
+INSTALL DESKTOP ENV
+~ # sudo pacman -S xorg-server
+~ # sudo pacman -S gdm
+
+ENABLE
+~ # sudo systemctl enable gdm
+
+INSTALL GNOME
+~ # sudo pacman -S gnome gnome-extra
+        ### enter > enter > 1 (for default)
+
+~ # reboot
+
+koliak login screen should be there
