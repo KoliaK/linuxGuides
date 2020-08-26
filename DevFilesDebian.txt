@@ -1,0 +1,2 @@
+Installing those are necessary for making DWM ~$ sudo make clean install
+~$ sudo apt-get install libx11-dev libxft-dev libxinerama-dev build-essential
