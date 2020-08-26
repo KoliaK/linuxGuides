@@ -1,2 +1,5 @@
 Installing those are necessary for making DWM ~$ sudo make clean install
 ~$ sudo apt-get install libx11-dev libxft-dev libxinerama-dev build-essential
+
+Also, if you want to use already patched version for debian:
+~$ sudo apt-get source dwm
