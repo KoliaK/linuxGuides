@@ -3,3 +3,4 @@ Installing those are necessary for making DWM ~$ sudo make clean install
 
 Also, if you want to use already patched version for debian:
 ~$ sudo apt-get source dwm
+(appropriate 'deb-src' has to be enabled in the 'souces.list').
